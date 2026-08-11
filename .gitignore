@@ -1,0 +1,20 @@
+# Supabase secrets
+.streamlit/secrets.toml
+
+# Python virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*/__pycache__/
+
+# Python compiled files
+*.pyc
+*.pyo
+
+# Environment files
+.env
+.env.*
+
+# VS Code
+.vscode/
