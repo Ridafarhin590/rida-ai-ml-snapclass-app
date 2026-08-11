@@ -1,54 +1,99 @@
 import streamlit as st
+import base64
 from pathlib import Path
 
 
 def style_background_home():
 
-    image_path = (
-        Path(__file__).resolve().parents[2]
-        / "assets"
-        / "ai_background.png"
-    )
+    # Project root
+    project_root = Path(__file__).resolve().parents[2]
 
+    # Image location
+    image_path = project_root / "assets" / "ai_background.png"
+
+    # Check image exists
     if not image_path.exists():
-        st.error(f"Image not found: {image_path}")
+        st.error(
+            f"Background image not found:\n{image_path}"
+        )
         return
 
+    # Read image
+    with open(image_path, "rb") as image_file:
+        image_data = image_file.read()
+
+    # Convert image to base64
+    encoded_image = base64.b64encode(
+        image_data
+    ).decode("utf-8")
+
+    # Full page background
     st.markdown(
         f"""
         <style>
 
+        /* =========================================
+           MAIN STREAMLIT APP
+        ========================================= */
+
         .stApp {{
-            background: transparent !important;
+            background-image:
+                url("data:image/png;base64,{encoded_image}") !important;
+
+            background-size: cover !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-attachment: fixed !important;
+
+            min-height: 100vh !important;
         }}
+
+
+        /* =========================================
+           STREAMLIT APP CONTAINER
+        ========================================= */
 
         [data-testid="stAppViewContainer"] {{
             background: transparent !important;
         }}
 
+
+        /* =========================================
+           MAIN CONTENT
+        ========================================= */
+
+        [data-testid="stAppViewContainer"] > .main {{
+            background: transparent !important;
+        }}
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
         [data-testid="stHeader"] {{
             background: transparent !important;
         }}
 
-        .background-image {{
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
 
-            background-image: url("file://{image_path}");
+        /* =========================================
+           DECORATIVE TOP CONTAINER
+        ========================================= */
 
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+        [data-testid="stDecoration"] {{
+            background: transparent !important;
+        }}
 
-            z-index: -1000;
+
+        /* =========================================
+           MAIN BLOCK
+        ========================================= */
+
+        .block-container {{
+            background: transparent !important;
         }}
 
         </style>
-
-        <div class="background-image"></div>
         """,
         unsafe_allow_html=True
     )
