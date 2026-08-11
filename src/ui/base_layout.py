@@ -3,12 +3,15 @@ import streamlit as st
 
 def style_background_home():
     """
-    Home page background is handled directly inside home_screen.py.
-    This function is kept for compatibility with existing imports.
+    Home page background styling.
+    The actual background image is injected by home_screen.py.
     """
+
     st.markdown(
         """
         <style>
+
+        /* Remove Streamlit default background */
         .stApp {
             background: transparent !important;
             background-color: transparent !important;
@@ -22,13 +25,19 @@ def style_background_home():
             background: transparent !important;
         }
 
+        [data-testid="stHeader"] {
+            background: transparent !important;
+        }
+
         .block-container {
             background: transparent !important;
         }
+
         </style>
         """,
         unsafe_allow_html=True
     )
+
 
 def style_background_dashboard():
 
