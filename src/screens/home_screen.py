@@ -12,7 +12,7 @@ def home_screen():
     header_home()
 
     st.markdown("""
-    <div style="text-align:center; margin-top:8px;">
+    <div style="text-align:center; margin-top:3px;">
 
     <h2 style="
     color:white;
