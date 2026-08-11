@@ -34,5 +34,3 @@ def show_attendance_result(df, logs):
 @st.dialog("Attendance Reports")
 def attendance_result_dialog(df, logs):
     show_attendance_result(df, logs)
-
-
