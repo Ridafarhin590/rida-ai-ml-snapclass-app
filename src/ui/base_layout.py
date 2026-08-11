@@ -1,241 +1,327 @@
 import streamlit as st
-import base64
 from pathlib import Path
+import base64
 
+
+# ============================================================
+# HOME PAGE BACKGROUND
+# ============================================================
 
 def style_background_home():
 
-    # Project root:
-    # ai-attendance-project-app/
+    # --------------------------------------------------------
+    # Find project root
+    #
+    # base_layout.py:
+    # project/src/ui/base_layout.py
+    #
+    # parents[0] -> ui
+    # parents[1] -> src
+    # parents[2] -> project root
+    # --------------------------------------------------------
+
     project_root = Path(__file__).resolve().parents[2]
 
     image_path = project_root / "assets" / "ai_background.png"
 
-    # Check image exists
+    # --------------------------------------------------------
+    # Check image
+    # --------------------------------------------------------
+
     if not image_path.exists():
-        st.error(f"❌ IMAGE NOT FOUND: {image_path}")
+        st.error(
+            f"Background image not found.\n\n"
+            f"Expected location:\n{image_path}"
+        )
         return
 
-    # Read image
+    # --------------------------------------------------------
+    # Convert PNG to Base64
+    # --------------------------------------------------------
+
     with open(image_path, "rb") as f:
         image_bytes = f.read()
 
-    # Convert PNG to base64
-    encoded = base64.b64encode(image_bytes).decode("utf-8")
+    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+
+    # --------------------------------------------------------
+    # Apply background DIRECTLY to Streamlit application
+    # --------------------------------------------------------
 
     st.markdown(
         f"""
         <style>
 
-        /* =========================================
-           REMOVE STREAMLIT BACKGROUND
-        ========================================= */
+        /* ====================================================
+           ENTIRE STREAMLIT APPLICATION
+        ==================================================== */
 
-        html,
-        body,
-        .stApp,
-        [data-testid="stAppViewContainer"],
-        [data-testid="stAppViewContainer"] > .main {{
-            background: transparent !important;
+        .stApp {{
+            min-height: 100vh !important;
+
+            background-image:
+                url("data:image/png;base64,{image_base64}") !important;
+
+            background-size: cover !important;
+
+            background-position: center center !important;
+
+            background-repeat: no-repeat !important;
+
+            background-attachment: fixed !important;
+
             background-color: transparent !important;
         }}
 
 
-        /* =========================================
-           FULL SCREEN IMAGE
-        ========================================= */
-
-        #snapclass-background {{
-            position: fixed !important;
-
-            top: 0 !important;
-            left: 0 !important;
-
-            width: 100vw !important;
-            height: 100vh !important;
-
-            object-fit: cover !important;
-            object-position: center !important;
-
-            z-index: 0 !important;
-
-            pointer-events: none !important;
-        }}
-
-
-        /* =========================================
-           KEEP STREAMLIT CONTENT ABOVE IMAGE
-        ========================================= */
+        /* ====================================================
+           STREAMLIT APP VIEW
+        ==================================================== */
 
         [data-testid="stAppViewContainer"] {{
-            position: relative !important;
-            z-index: 1 !important;
+            min-height: 100vh !important;
+
+            background: transparent !important;
+
+            background-color: transparent !important;
         }}
+
+
+        /* ====================================================
+           MAIN AREA
+        ==================================================== */
 
         [data-testid="stAppViewContainer"] > .main {{
-            position: relative !important;
-            z-index: 2 !important;
             background: transparent !important;
+
+            background-color: transparent !important;
+
+            min-height: 100vh !important;
         }}
+
+
+        /* ====================================================
+           MAIN CONTENT
+        ==================================================== */
+
+        [data-testid="stMain"] {{
+            background: transparent !important;
+
+            background-color: transparent !important;
+        }}
+
+
+        /* ====================================================
+           BLOCK CONTAINER
+        ==================================================== */
 
         .block-container {{
-            position: relative !important;
-            z-index: 3 !important;
+            background: transparent !important;
+
+            background-color: transparent !important;
+        }}
+
+
+        /* ====================================================
+           HEADER
+        ==================================================== */
+
+        [data-testid="stHeader"] {{
+            background: transparent !important;
+
+            background-color: transparent !important;
+        }}
+
+
+        /* ====================================================
+           SIDEBAR
+        ==================================================== */
+
+        [data-testid="stSidebar"] {{
             background: transparent !important;
         }}
 
-        [data-testid="stHeader"] {{
+
+        /* ====================================================
+           HIDE STREAMLIT DEFAULT HEADER
+        ==================================================== */
+
+        #MainMenu,
+        footer,
+        header {{
+            visibility: hidden !important;
+        }}
+
+
+        /* ====================================================
+           REMOVE POSSIBLE WHITE OVERLAY
+        ==================================================== */
+
+        [data-testid="stVerticalBlock"],
+        [data-testid="stHorizontalBlock"] {{
             background: transparent !important;
         }}
 
         </style>
-
-        <img
-            id="snapclass-background"
-            src="data:image/png;base64,{encoded}"
-        />
         """,
         unsafe_allow_html=True
     )
 
-def style_background_dashboard():
 
-    st.markdown("""
-    <style>
-
-    .stApp{
-        background: #E0E3FF !important;
-    }
-
-    </style>
-    """, unsafe_allow_html=True)
-
-
-def style_base_layout():
-
-    st.markdown("""
-    <style>
-
-    @import url('https://fonts.googleapis.com/css2?family=Climate+Crisis:YEAR@1979&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
-
-    #MainMenu, footer, header {
-        visibility: hidden;
-    }
-
-    .block-container {
-        padding-top: 1.5rem !important;
-    }
-
-    h1 {
-        font-family: 'Climate Crisis', sans-serif !important;
-        font-size: 3.5rem !important;
-    }
-
-    h2 {
-        font-family: 'Climate Crisis', sans-serif !important;
-        font-size: 2rem !important;
-    }
-
-    h3, h4, p {
-        font-family: 'Outfit', sans-serif !important;
-    }
-
-    button {
-        border-radius: 1.5rem !important;
-        border: none !important;
-        transition: transform 0.25s ease-in-out !important;
-    }
-
-    button[kind="primary"] {
-        background: linear-gradient(90deg,#D946EF,#3B82F6) !important;
-        color: white !important;
-    }
-
-    button[kind="secondary"] {
-        background: linear-gradient(90deg,#D946EF,#3B82F6)  !important;
-        color: white !important;
-    }
-
-    button[kind="tertiary"] {
-        background: black !important;
-        color: white !important;
-    }
-
-    button:hover {
-        transform: scale(1.05);
-    }
-
-    </style>
-    """, unsafe_allow_html=True)
+# ============================================================
+# DASHBOARD BACKGROUND
+# ============================================================
 
 def style_background_dashboard():
 
-    st.markdown("""
-    <style>
+    st.markdown(
+        """
+        <style>
 
-    .stApp{
-        background: #E0E3FF !important;
-    }
+        .stApp {
+            background-image: none !important;
+            background: #E0E3FF !important;
+        }
 
-    </style>
-    """, unsafe_allow_html=True)
+        [data-testid="stAppViewContainer"] {
+            background: #E0E3FF !important;
+        }
 
+        [data-testid="stAppViewContainer"] > .main {
+            background: #E0E3FF !important;
+        }
+
+        [data-testid="stMain"] {
+            background: #E0E3FF !important;
+        }
+
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+# ============================================================
+# COMMON BASE LAYOUT
+# ============================================================
 
 def style_base_layout():
 
-    st.markdown("""
-    <style>
+    st.markdown(
+        """
+        <style>
 
-    @import url('https://fonts.googleapis.com/css2?family=Climate+Crisis:YEAR@1979&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+        @import url(
+            'https://fonts.googleapis.com/css2?family=Climate+Crisis:YEAR@1979&display=swap'
+        );
 
-    #MainMenu, footer, header {
-        visibility: hidden;
-    }
+        @import url(
+            'https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap'
+        );
 
-    .block-container {
-        padding-top: 1.5rem !important;
-    }
 
-    h1 {
-        font-family: 'Climate Crisis', sans-serif !important;
-        font-size: 3.5rem !important;
-    }
+        /* ----------------------------------------------------
+           HIDE STREAMLIT DEFAULT UI
+        ---------------------------------------------------- */
 
-    h2 {
-        font-family: 'Climate Crisis', sans-serif !important;
-        font-size: 2rem !important;
-    }
+        #MainMenu,
+        footer,
+        header {
+            visibility: hidden !important;
+        }
 
-    h3, h4, p {
-        font-family: 'Outfit', sans-serif !important;
-    }
 
-    button {
-        border-radius: 1.5rem !important;
-        border: none !important;
-        transition: transform 0.25s ease-in-out !important;
-    }
+        /* ----------------------------------------------------
+           MAIN CONTAINER
+        ---------------------------------------------------- */
 
-    button[kind="primary"] {
-        background: linear-gradient(90deg,#D946EF,#3B82F6) !important;
-        color: white !important;
-    }
+        .block-container {
+            padding-top: 1.5rem !important;
+            background: transparent !important;
+        }
 
-    button[kind="secondary"] {
-        background: linear-gradient(90deg,#D946EF,#3B82F6)  !important;
-        color: white !important;
-    }
 
-    button[kind="tertiary"] {
-        background: black !important;
-        color: white !important;
-    }
+        /* ----------------------------------------------------
+           HEADINGS
+        ---------------------------------------------------- */
 
-    button:hover {
-        transform: scale(1.05);
-    }
+        h1 {
+            font-family:
+                'Climate Crisis',
+                sans-serif !important;
 
-    </style>
-    """, unsafe_allow_html=True)
+            font-size: 3.5rem !important;
+        }
+
+
+        h2 {
+            font-family:
+                'Climate Crisis',
+                sans-serif !important;
+
+            font-size: 2rem !important;
+        }
+
+
+        h3,
+        h4,
+        p {
+            font-family:
+                'Outfit',
+                sans-serif !important;
+        }
+
+
+        /* ----------------------------------------------------
+           BUTTONS
+        ---------------------------------------------------- */
+
+        button {
+            border-radius: 1.5rem !important;
+
+            border: none !important;
+
+            transition:
+                transform 0.25s ease-in-out !important;
+        }
+
+
+        button[kind="primary"] {
+            background:
+                linear-gradient(
+                    90deg,
+                    #D946EF,
+                    #3B82F6
+                ) !important;
+
+            color: white !important;
+        }
+
+
+        button[kind="secondary"] {
+            background:
+                linear-gradient(
+                    90deg,
+                    #D946EF,
+                    #3B82F6
+                ) !important;
+
+            color: white !important;
+        }
+
+
+        button[kind="tertiary"] {
+            background: black !important;
+
+            color: white !important;
+        }
+
+
+        button:hover {
+            transform: scale(1.05) !important;
+        }
+
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
