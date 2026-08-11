@@ -1,5 +1,4 @@
 import streamlit as st
-import base64
 from pathlib import Path
 
 
@@ -12,26 +11,15 @@ def style_background_home():
     )
 
     if not image_path.exists():
-        st.error(f"❌ Image not found: {image_path}")
+        st.error(f"Image not found: {image_path}")
         return
-
-    with open(image_path, "rb") as f:
-        image_bytes = f.read()
-
-    encoded_image = base64.b64encode(image_bytes).decode()
 
     st.markdown(
         f"""
         <style>
-        .stApp {{
-            background-image: url(
-                "data:image/png;base64,{encoded_image}"
-            ) !important;
 
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            background-attachment: fixed !important;
+        .stApp {{
+            background: transparent !important;
         }}
 
         [data-testid="stAppViewContainer"] {{
@@ -41,11 +29,29 @@ def style_background_home():
         [data-testid="stHeader"] {{
             background: transparent !important;
         }}
+
+        .background-image {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+
+            background-image: url("file://{image_path}");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            z-index: -1000;
+        }}
+
         </style>
+
+        <div class="background-image"></div>
         """,
         unsafe_allow_html=True
     )
-
 
 def style_background_dashboard():
 
