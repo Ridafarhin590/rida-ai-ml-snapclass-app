@@ -1,97 +1,44 @@
 import streamlit as st
-import base64
-from pathlib import Path
 
 
 def style_background_home():
 
-    # Project root
-    project_root = Path(__file__).resolve().parents[2]
-
-    # Image location
-    image_path = project_root / "assets" / "ai_background.png"
-
-    # Check image exists
-    if not image_path.exists():
-        st.error(
-            f"Background image not found:\n{image_path}"
-        )
-        return
-
-    # Read image
-    with open(image_path, "rb") as image_file:
-        image_data = image_file.read()
-
-    # Convert image to base64
-    encoded_image = base64.b64encode(
-        image_data
-    ).decode("utf-8")
-
-    # Full page background
     st.markdown(
-        f"""
+        """
         <style>
 
-        /* =========================================
-           MAIN STREAMLIT APP
-        ========================================= */
-
-        .stApp {{
-            background-image:
-                url("data:image/png;base64,{encoded_image}") !important;
+        .stApp {
+            background-image: url(
+                "https://raw.githubusercontent.com/Ridafarhin590/rida-ai-ml-snapclass-app/main/assets/ai_background.png"
+            ) !important;
 
             background-size: cover !important;
-            background-position: center center !important;
+            background-position: center !important;
             background-repeat: no-repeat !important;
             background-attachment: fixed !important;
 
             min-height: 100vh !important;
-        }}
+        }
 
-
-        /* =========================================
-           STREAMLIT APP CONTAINER
-        ========================================= */
-
-        [data-testid="stAppViewContainer"] {{
+        [data-testid="stAppViewContainer"] {
             background: transparent !important;
-        }}
+        }
 
-
-        /* =========================================
-           MAIN CONTENT
-        ========================================= */
-
-        [data-testid="stAppViewContainer"] > .main {{
+        [data-testid="stAppViewContainer"] > .main {
             background: transparent !important;
-        }}
+        }
 
-
-        /* =========================================
-           HEADER
-        ========================================= */
-
-        [data-testid="stHeader"] {{
+        [data-testid="stHeader"] {
             background: transparent !important;
-        }}
+        }
 
-
-        /* =========================================
-           DECORATIVE TOP CONTAINER
-        ========================================= */
-
-        [data-testid="stDecoration"] {{
+        [data-testid="stDecoration"] {
             background: transparent !important;
-        }}
+        }
 
-
-        /* =========================================
-           MAIN BLOCK
-        ========================================= */
-
-        .block-container {{
+        .block-container {
             background: transparent !important;
-        }}
+        }
 
         </style>
         """,
