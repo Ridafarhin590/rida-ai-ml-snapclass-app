@@ -1,43 +1,102 @@
 import streamlit as st
+import base64
+from pathlib import Path
 
 
 def style_background_home():
-    """
-    Home page background styling.
-    The actual background image is injected by home_screen.py.
-    """
+
+    # Project root:
+    # ai-attendance-project-app/
+    project_root = Path(__file__).resolve().parents[2]
+
+    image_path = project_root / "assets" / "ai_background.png"
+
+    # Check image exists
+    if not image_path.exists():
+        st.error(f"❌ IMAGE NOT FOUND: {image_path}")
+        return
+
+    # Read image
+    with open(image_path, "rb") as f:
+        image_bytes = f.read()
+
+    # Convert PNG to base64
+    encoded = base64.b64encode(image_bytes).decode("utf-8")
 
     st.markdown(
-        """
+        f"""
         <style>
 
-        /* Remove Streamlit default background */
-        .stApp {
+        /* =========================================
+           REMOVE STREAMLIT BACKGROUND
+        ========================================= */
+
+        html,
+        body,
+        .stApp,
+        [data-testid="stAppViewContainer"],
+        [data-testid="stAppViewContainer"] > .main {{
             background: transparent !important;
             background-color: transparent !important;
-        }
+        }}
 
-        [data-testid="stAppViewContainer"] {
-            background: transparent !important;
-        }
 
-        [data-testid="stAppViewContainer"] > .main {
-            background: transparent !important;
-        }
+        /* =========================================
+           FULL SCREEN IMAGE
+        ========================================= */
 
-        [data-testid="stHeader"] {
-            background: transparent !important;
-        }
+        #snapclass-background {{
+            position: fixed !important;
 
-        .block-container {
+            top: 0 !important;
+            left: 0 !important;
+
+            width: 100vw !important;
+            height: 100vh !important;
+
+            object-fit: cover !important;
+            object-position: center !important;
+
+            z-index: 0 !important;
+
+            pointer-events: none !important;
+        }}
+
+
+        /* =========================================
+           KEEP STREAMLIT CONTENT ABOVE IMAGE
+        ========================================= */
+
+        [data-testid="stAppViewContainer"] {{
+            position: relative !important;
+            z-index: 1 !important;
+        }}
+
+        [data-testid="stAppViewContainer"] > .main {{
+            position: relative !important;
+            z-index: 2 !important;
             background: transparent !important;
-        }
+        }}
+
+        .block-container {{
+            position: relative !important;
+            z-index: 3 !important;
+            background: transparent !important;
+        }}
+
+        [data-testid="stHeader"] {{
+            background: transparent !important;
+        }}
 
         </style>
+
+        <img
+            id="snapclass-background"
+            src="data:image/png;base64,{encoded}"
+        />
         """,
         unsafe_allow_html=True
     )
-
 
 def style_background_dashboard():
 
