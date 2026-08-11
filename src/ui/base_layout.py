@@ -22,7 +22,7 @@ def style_background_home():
 
     project_root = Path(__file__).resolve().parents[2]
 
-    image_path = project_root / "assets" / "ai_background.png"
+    image_path = rida-ai-ml-snapclass-app / "assets" / "ai_background.png"
 
     # --------------------------------------------------------
     # Check image
