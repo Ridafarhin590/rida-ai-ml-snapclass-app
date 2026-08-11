@@ -1,20 +1,49 @@
 import streamlit as st
+import base64
+from pathlib import Path
+
 
 def style_background_home():
 
-    st.markdown("""
-    <style>
+    image_path = (
+        Path(__file__).resolve().parents[2]
+        / "assets"
+        / "ai_background.png"
+    )
 
-    .stApp{
-        background-image: url("https://raw.githubusercontent.com/Ridafarhin590/rida-ai-ml-snapclass-app/main/ai_background.png");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-    }
+    if not image_path.exists():
 
-    </style>
-    """, unsafe_allow_html=True)
+        st.error(
+            f"Background image not found: {image_path}"
+        )
+
+        return
+
+    with open(image_path, "rb") as image_file:
+
+        encoded_image = base64.b64encode(
+            image_file.read()
+        ).decode()
+
+    st.markdown(
+        f"""
+        <style>
+
+        .stApp {{
+            background-image:
+                url("data:image/png;base64,{encoded_image}");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
 
 def style_background_dashboard():
 
