@@ -1,15 +1,98 @@
 import streamlit as st
+import base64
+from pathlib import Path
+
 from src.components.header import header_home
 from src.components.footer import footer_home
-from src.ui.base_layout import style_base_layout, style_background_home
+from src.ui.base_layout import style_base_layout
 from src.components.chatbot import chatbot
+
 
 def home_screen():
 
-    style_background_home()
-    style_base_layout()
+    # =========================================================
+    # LOAD LOCAL BACKGROUND IMAGE
+    # =========================================================
 
-    header_home()
+    project_root = Path(__file__).resolve().parents[2]
+
+    image_path = project_root / "assets" / "ai_background.png"
+
+    if not image_path.exists():
+        st.error(f"❌ Background image not found: {image_path}")
+        return
+
+    with open(image_path, "rb") as image_file:
+        image_bytes = image_file.read()
+
+    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+
+    # =========================================================
+    # FULL SCREEN BACKGROUND
+    # =========================================================
+
+    st.markdown(
+        f"""
+        <style>
+
+        html,
+        body,
+        .stApp,
+        [data-testid="stAppViewContainer"],
+        [data-testid="stAppViewContainer"] > .main {{
+            background: transparent !important;
+            background-color: transparent !important;
+        }}
+
+        /* Full-screen background image */
+        #snapclass-home-background {{
+            position: fixed !important;
+
+            top: 0 !important;
+            left: 0 !important;
+
+            width: 100vw !important;
+            height: 100vh !important;
+
+            object-fit: cover !important;
+            object-position: center center !important;
+
+            z-index: 0 !important;
+
+            pointer-events: none !important;
+        }}
+
+        /* Streamlit content above background */
+        [data-testid="stAppViewContainer"] {{
+            position: relative !important;
+            z-index: 1 !important;
+        }}
+
+        [data-testid="stAppViewContainer"] > .main {{
+            position: relative !important;
+            z-index: 2 !important;
+            background: transparent !important;
+        }}
+
+        .block-container {{
+            position: relative !important;
+            z-index: 3 !important;
+            background: transparent !important;
+        }}
+
+        [data-testid="stHeader"] {{
+            background: transparent !important;
+        }}
+
+        </style>
+
+        <img
+            id="snapclass-home-background"
+            src="data:image/png;base64,{image_base64}"
+        />
+        """,
+        unsafe_allow_html=True
+    )
 
     st.markdown("""
     <div style="text-align:center; margin-top:8px;">
