@@ -5,7 +5,10 @@ from PIL import Image
 import time
 
 
-@st.dialog("Capture or upload photos")
+@st.dialog(
+    "Capture or upload photos",
+    width="large"
+)
 def add_photos_dialog():
 
     st.write('Add classroom photos to scan for attendance')

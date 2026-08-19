@@ -4,6 +4,8 @@ import face_recognition_models
 import streamlit as st
 
 from sklearn.svm import SVC
+from sklearn.utils.validation import check_is_fitted
+
 from src.database.db import get_all_students
 
 
@@ -62,7 +64,7 @@ def get_face_embeddings(image_np):
             dtype=np.float64
         )
 
-        # Dlib face embedding must contain 128 values
+        # Dlib face embedding MUST contain 128 values
         if embedding.shape == (128,):
 
             encodings.append(embedding)
@@ -71,7 +73,7 @@ def get_face_embeddings(image_np):
 
 
 # ============================================================
-# TRAIN CLASSIFIER
+# TRAIN FACE CLASSIFIER
 # ============================================================
 
 @st.cache_resource
@@ -81,7 +83,7 @@ def get_trained_model():
     y = []
 
     # --------------------------------------------------------
-    # GET STUDENTS
+    # GET STUDENTS FROM SUPABASE
     # --------------------------------------------------------
 
     try:
@@ -90,18 +92,18 @@ def get_trained_model():
 
     except Exception as e:
 
-        print("Error getting students:", e)
+        st.error(
+            f"Unable to load students from Supabase: {e}"
+        )
 
         return None
 
     if not students:
 
-        print("No students found.")
-
         return None
 
     # --------------------------------------------------------
-    # COLLECT VALID EMBEDDINGS
+    # COLLECT VALID FACE EMBEDDINGS
     # --------------------------------------------------------
 
     for student in students:
@@ -125,34 +127,33 @@ def get_trained_model():
         except Exception:
 
             print(
-                f"Invalid embedding for student "
-                f"{student_id}"
+                f"Invalid embedding for student {student_id}"
             )
 
             continue
 
         # ----------------------------------------------------
-        # MUST BE 128 DIMENSIONS
+        # EMBEDDING MUST HAVE 128 VALUES
         # ----------------------------------------------------
 
         if embedding.shape != (128,):
 
             print(
-                f"Skipping student {student_id}: "
-                f"embedding shape = {embedding.shape}"
+                f"Skipping student {student_id}. "
+                f"Embedding shape: {embedding.shape}"
             )
 
             continue
 
         # ----------------------------------------------------
-        # CHECK NAN / INFINITY
+        # CHECK INVALID NUMBERS
         # ----------------------------------------------------
 
         if not np.all(np.isfinite(embedding)):
 
             print(
-                f"Skipping student {student_id}: "
-                f"embedding contains invalid numbers"
+                f"Skipping student {student_id}. "
+                f"Embedding contains NaN or infinity."
             )
 
             continue
@@ -161,12 +162,14 @@ def get_trained_model():
         y.append(int(student_id))
 
     # --------------------------------------------------------
-    # NO VALID DATA
+    # NO VALID EMBEDDINGS
     # --------------------------------------------------------
 
     if len(X) == 0:
 
-        print("No valid face embeddings.")
+        st.warning(
+            "No valid face embeddings found."
+        )
 
         return None
 
@@ -174,12 +177,10 @@ def get_trained_model():
     # UNIQUE STUDENTS
     # --------------------------------------------------------
 
-    unique_students = sorted(
-        set(y)
-    )
+    unique_students = sorted(set(y))
 
     print(
-        "Students used for training:",
+        "Valid students:",
         unique_students
     )
 
@@ -189,7 +190,7 @@ def get_trained_model():
     )
 
     # ========================================================
-    # ONE STUDENT
+    # ONLY ONE STUDENT
     # ========================================================
 
     if len(unique_students) == 1:
@@ -211,8 +212,9 @@ def get_trained_model():
         class_weight="balanced"
     )
 
-    # VERY IMPORTANT:
-    # DO NOT silently ignore training errors.
+    # --------------------------------------------------------
+    # TRAIN
+    # --------------------------------------------------------
 
     try:
 
@@ -223,21 +225,25 @@ def get_trained_model():
 
     except Exception as e:
 
-        print(
-            "SVC TRAINING FAILED:",
-            repr(e)
+        st.error(
+            f"SVC TRAINING FAILED: "
+            f"{type(e).__name__}: {e}"
         )
 
         return None
 
     # --------------------------------------------------------
-    # CONFIRM MODEL IS FITTED
+    # VERIFY THAT MODEL IS ACTUALLY FITTED
     # --------------------------------------------------------
 
-    if not hasattr(clf, "support_"):
+    try:
 
-        print(
-            "ERROR: SVC was created but not fitted."
+        check_is_fitted(clf)
+
+    except Exception:
+
+        st.error(
+            "SVC was created but was not successfully fitted."
         )
 
         return None
@@ -280,7 +286,7 @@ def predict_attendance(image_np):
     detected_student = {}
 
     # --------------------------------------------------------
-    # DETECT FACE
+    # GET FACE EMBEDDING FROM CAMERA IMAGE
     # --------------------------------------------------------
 
     encodings = get_face_embeddings(
@@ -296,16 +302,12 @@ def predict_attendance(image_np):
         )
 
     # --------------------------------------------------------
-    # GET MODEL
+    # GET TRAINED MODEL
     # --------------------------------------------------------
 
     model_data = get_trained_model()
 
     if model_data is None:
-
-        print(
-            "No trained face model available."
-        )
 
         return (
             detected_student,
@@ -335,7 +337,7 @@ def predict_attendance(image_np):
     )
 
     # --------------------------------------------------------
-    # PROCESS DETECTED FACES
+    # PROCESS EACH FACE
     # --------------------------------------------------------
 
     for encoding in encodings:
@@ -365,23 +367,29 @@ def predict_attendance(image_np):
 
         else:
 
-            # NEVER call predict() if clf is None
             if clf is None:
 
-                print(
-                    "Classifier is unavailable."
+                continue
+
+            # ------------------------------------------------
+            # VERIFY CLASSIFIER IS FITTED
+            # ------------------------------------------------
+
+            try:
+
+                check_is_fitted(clf)
+
+            except Exception:
+
+                st.error(
+                    "Face classifier is not trained."
                 )
 
                 continue
 
-            # NEVER use an unfitted classifier
-            if not hasattr(clf, "support_"):
-
-                print(
-                    "Classifier is not fitted."
-                )
-
-                continue
+            # ------------------------------------------------
+            # PREDICT
+            # ------------------------------------------------
 
             try:
 
@@ -393,21 +401,19 @@ def predict_attendance(image_np):
 
             except Exception as e:
 
-                print(
-                    "Prediction failed:",
-                    repr(e)
+                st.error(
+                    f"Face prediction failed: {e}"
                 )
 
                 continue
 
         # ----------------------------------------------------
-        # FIND STUDENT EMBEDDINGS
+        # FIND ALL EMBEDDINGS FOR PREDICTED STUDENT
         # ----------------------------------------------------
 
         indexes = [
             i
-            for i, student_id
-            in enumerate(y_train)
+            for i, student_id in enumerate(y_train)
             if int(student_id) == predicted_id
         ]
 
@@ -416,7 +422,7 @@ def predict_attendance(image_np):
             continue
 
         # ----------------------------------------------------
-        # CALCULATE FACE DISTANCE
+        # FIND BEST FACE DISTANCE
         # ----------------------------------------------------
 
         best_distance = float("inf")
@@ -443,8 +449,8 @@ def predict_attendance(image_np):
         threshold = 0.6
 
         print(
-            f"Student: {predicted_id} | "
-            f"Face distance: {best_distance:.4f}"
+            f"Student {predicted_id} "
+            f"distance = {best_distance:.4f}"
         )
 
         if best_distance <= threshold:

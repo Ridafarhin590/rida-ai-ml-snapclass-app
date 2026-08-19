@@ -1,15 +1,15 @@
 import streamlit as st
 
+
 def footer_home():
-    st.markdown("""
-    <div style="text-align:center; margin-top:40px;">
-        <p style="color:white;font-weight:bold;">
-            Created with ❤️ by KU. RIDA FARHIN
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-
+    logo_url = "https://i.ibb.co/4r5X1FY/apnacollege.png"
+    
+    st.markdown(f"""
+        <div style="margin-top:2rem; display:flex; gap:6px; justify-content:center; items-align:center">
+        <p style="font-weight:bold; color:white;"> Created with ❤️ by RIDA </p>  
+        </div>
+                
+                """, unsafe_allow_html=True)
 
 
 def footer_dashboard():
