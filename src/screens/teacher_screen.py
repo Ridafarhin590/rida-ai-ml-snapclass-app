@@ -1633,7 +1633,7 @@ def teacher_tab_notices():
         elif "exam" in topic.lower():
 
             st.session_state[
-                "generated_notice"
+                "notice_content"
             ] = (
                 "Dear Students,\n\n"
                 "This is to inform you that examinations "
@@ -1647,7 +1647,7 @@ def teacher_tab_notices():
         elif "attendance" in topic.lower():
 
             st.session_state[
-                "generated_notice"
+                "notice_content"
             ] = (
                 "Dear Students,\n\n"
                 "Students with low attendance are advised "
@@ -1662,7 +1662,7 @@ def teacher_tab_notices():
         elif "project" in topic.lower():
 
             st.session_state[
-                "generated_notice"
+                "notice_content"
             ] = (
                 "Dear Students,\n\n"
                 "This is a reminder regarding the MCA "
@@ -1676,7 +1676,7 @@ def teacher_tab_notices():
         else:
 
             st.session_state[
-                "generated_notice"
+                "notice_content"
             ] = (
                 f"Dear Students,\n\n"
                 f"This notice is regarding {topic}.\n\n"
