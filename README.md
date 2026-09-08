@@ -17,7 +17,7 @@
     🌐 Landing Page
   </a>
   &nbsp; • &nbsp;
-  <a href="https://rida-ai-ml-snapclass-app.streamlit.app/">
+  <a href="https://ai-ml-snapclass-app.streamlit.app/">
     🚀 Live Application
   </a>
 </p>
@@ -34,7 +34,7 @@ The landing page provides an overview of the SnapClass project, its features, te
 
 ### 🚀 SnapClass AI Application
 
-👉 **[Launch SnapClass](https://rida-ai-ml-snapclass-app.streamlit.app/)**
+👉 **[Launch SnapClass](https://ai-ml-snapclass-app.streamlit.app/)**
 
 The live Streamlit application allows users to interact with the AI-based attendance system.
 
